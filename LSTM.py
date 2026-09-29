@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, Bidirectional
+from keras.layers import Dense, LSTM, Bidirectional, Multiply
 from keras.optimizers import Adam
 # from tensorflow.keras.optimizers import Adam
 from numpy.random import seed
@@ -67,11 +67,8 @@ yuna_X_test = yuan_X_test.reshape(yuan_X_test.shape[0], yuan_X_test.shape[1], 5)
 
 model, yuan_model = lstm(model_type,X_train,yuan_X_train)
 print(model.summary())
-adam = Adam(learning_rate=0.01)
-model.compile(optimizer=adam,
-              loss='mse')
-yuan_model.compile(optimizer=adam,
-                   loss='mse')
+# adam = Adam(learning_rate=0.01)
+
 
 history = model.fit(X_train, y_train,
                     batch_size=32,

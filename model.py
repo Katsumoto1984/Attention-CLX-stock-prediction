@@ -1,10 +1,19 @@
+from keras import backend as K
+from keras.layers import (
+    Input, Dense, LSTM, Conv1D, Dropout, Bidirectional,
+    Multiply, Concatenate, Add, Average,
+    Lambda, RepeatVector, Permute, Flatten
+)
+from keras.models import Model, Sequential
+from keras.optimizers import Adam
+
+
 from keras.layers import Input, Dense, LSTM, Conv1D, Dropout, Bidirectional, Multiply
-from keras.models import Model
+from keras.models import Model, Sequential
 # from attention_utils import get_activations
-from keras.layers import merge
-from keras.layers.core import *
-from keras.layers.recurrent import LSTM
-from keras.models import *
+from keras.layers import Concatenate, Add, Multiply, Average
+# from keras.layers import LSTM
+# from keras.models import *
 from utils import *
 import numpy as np
 import xgboost as xgb
@@ -21,7 +30,7 @@ def attention_3d_block_merge(inputs,single_attention_vector = False):
         a = RepeatVector(input_dim)(a)
     a_probs = Permute((1, 2), name='attention_vec')(a)
 
-    output_attention_mul = merge([inputs, a_probs], name='attention_mul', mode='mul')
+    output_attention_mul = Multiply()([inputs, a_probs])
     return output_attention_mul
 
 def attention_3d_block(inputs, single_attention_vector=False):
@@ -100,7 +109,7 @@ def lstm(model_type,X_train,yuan_X_train):
                     input_shape=(yuan_X_train.shape[1], 5)))
         yuan_model.add(LSTM(units=50, activation='relu'))
         yuan_model.add(Dense(5))
-    if model_type == 3:
+    elif model_type == 3:
         # BiLSTM
         model = Sequential()
         model.add(Bidirectional(LSTM(50, activation='relu'),
@@ -111,7 +120,13 @@ def lstm(model_type,X_train,yuan_X_train):
         yuan_model.add(Bidirectional(LSTM(50, activation='relu'),
                                     input_shape=(yuan_X_train.shape[1], 5)))
         yuan_model.add(Dense(5))
+    # separate optimizers
+    opt1 = Adam(learning_rate=0.001)
+    opt2 = Adam(learning_rate=0.001)
 
+    model.compile(optimizer=opt1, loss='mse')
+    yuan_model.compile(optimizer=opt2, loss='mse')
+    
     return model,yuan_model
 
 def xgb_scheduler(data,y_hat):

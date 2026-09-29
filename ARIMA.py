@@ -86,7 +86,7 @@ for t in range(test_set.shape[0]):
     model1 = sm.tsa.ARIMA(history, order=(2, 1, 0))
     model_fit = model1.fit()
     yhat = model_fit.forecast()
-    yhat = np.float(yhat[0])
+    yhat = np.float64(yhat[0])
     predictions.append(yhat)
     obs = test_set2.iloc[t, 5]
     # obs = np.float(obs)

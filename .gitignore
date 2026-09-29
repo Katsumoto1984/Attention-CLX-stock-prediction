@@ -22,7 +22,7 @@ dist/
 .vscode/
 
 # Data files
-*.csv
+#*.csv
 *.parquet
 *.h5
 *.db
